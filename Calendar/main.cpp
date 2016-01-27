@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <cstdlib>
 
 using namespace std;
 
@@ -12,6 +14,11 @@ struct Event
     string time;
 };
 
+char myevent[256];
+string eventTime;
+int day, month, year;
+
+
 void printInformation(Event event)
 {
     cout << "Name: " << event.name << "\n";
@@ -19,14 +26,46 @@ void printInformation(Event event)
     cout << "Time: " << event.time << "\n";
 }
 
+void saveEvent(Event event)
+{
+    // Open a file to save the event(s) to
+    ofstream outf("events.dat");
+    // Check for errors when opening the file
+    if (!outf)
+    {
+        // Print an error and exit
+        cerr << "The file " << outf << " could not be opened to write!" << endl;
+        exit(1);
+    }
+
+    outf << myevent << "," << day << "," << month << "," << year << "," << eventTime << endl;
+}    
+
+void loadEvents()
+{
+    // Read event(s) from file
+    ifstream inf("events.dat");
+    // Check for errors when opening the file
+    if (!inf)
+    {
+        // Print an error and exit
+        cerr << "The file " << inf << " could not be opened to read!" << endl;
+        exit(1);
+    }
+
+    // while there are lines left to read
+    while (inf)
+    {
+        string strInput;
+        inf >> strInput;
+        cout << strInput << endl;
+    }
+}
 
 int main()
 {
-    string myevent, time;
-    int day, month, year;
-
     cout << "Enter a name for your event: " << endl;
-    cin >> myevent;
+    cin.getline (myevent, 256);
 
     cout << "Enter a day for your event: " << endl;
     cin >> day;
@@ -38,10 +77,12 @@ int main()
     cin >> year;
 
     cout << "Enter a time for your event: " << endl;
-    cin >> time;
+    cin >> eventTime;
 
-    Event event = {myevent, day, month, year, time};
+    Event event = {myevent, day, month, year, eventTime};
     
+    saveEvent(event);
+
     printInformation(event);
 
     return 0;
